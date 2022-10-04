@@ -1,56 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { addToDb, getstroageitem } from '../../utilities/fakedb';
-import Order from './Order/Order';
-import Product from './Product/Product';
+import useCart from '../../Hooks/useCart'
+import useProduct from '../../Hooks/useProduct'
+import { addToDb } from '../../utilities/fakedb'
+import Cart from './Cart/Cart'
+import Product from './Product/Product'
+import {Link} from 'react-router-dom'
 
-const Shop = () => {
-    const [Productt,setproduct]=useState([]);
-    const [cart,setcart]=useState([]);
-    useEffect(()=>{
-        fetch("./Products.JSON")
-        .then(res=>res.json())
-        .then(data=>setproduct(data))
-    },[])
-    // new item cart add
-    function handleclick(Product){
-        let newcart=[];
-        const exsis=cart.find(Product=>Product.id===Product.id)
+function Shop() {
+    const [Productt,setProductt]=useProduct()
+    const [cart,setcart]=useCart()
+    const totalitems=(Proitems)=>{
+        let newCart=[]
+        const exsis=cart.find(carp=>carp.id===Proitems.id)
         if(!exsis){
-            Product.quantity=1;
-            newcart=[...cart,Product]
+            Proitems.quantiy=1;
+            newCart=[...cart,Proitems]
         }else{
-            const rest=cart.filter(Product=>Product.id !== Product.id);
-            exsis.quantity=exsis.quantity+1;
-            newcart=[...rest,exsis];
+            const rest=cart.filter(Pro=>Pro.id !== Proitems.id);
+            exsis.quantiy=exsis.quantiy+1
+            newCart=[...rest,exsis]
         }
-        
-        setcart(newcart)
-        addToDb(Product.id)
+        setcart(newCart)
+        addToDb(Proitems.id)
     }
-    // save stroage
-    useEffect(()=>{
-        const stroage=getstroageitem();
-        const savecart=[];
-        for(const id in stroage){
-         const addproduct=Productt.find(Prod=>Prod.id===id)
-         if(addproduct){
-            const quantity=stroage[id]
-            addproduct.quantity=quantity
-            savecart.push(addproduct)
-         }
-        }
-        setcart(savecart)
-    },[Productt])
     return (
-        <div className='container mx-auto flex'>
-           <div className='w-[1200px] flex flex-wrap  m-2 gap-3'>
-           {Productt.map(Pro=><Product key={Pro.id} Product={Pro} Handleclick={handleclick}></Product>)}
+        <div className='container mx-auto flex mt-5'>
+           <div className='w-[1200px] flex flex-wrap gap-2'>
+            {Productt.map(Prodata=><Product key={Prodata.id} Products={Prodata} Handleitem={totalitems}></Product>)}
            </div>
-           <div className='w-[350px]  m-2 bg-slate-600 text-white'>
-               <Order cart={cart}></Order>
+           <div className='w-[300px] bg-[#7b2cbf] p-2 text-white'>
+            <Cart cart={cart}>
+            <Link to="/ordereview"><button className='bg-[#197278] w-full rounded-md py-2 text-white'>Order Review</button></Link>
+            </Cart>
            </div>
         </div>
-    );
-};
+    )
+}
 
-export default Shop;
+export default Shop
